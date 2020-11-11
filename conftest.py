@@ -21,7 +21,7 @@ def session():
     return requests.Session()
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def service_factory(session, base_url):
     API_SERVICE = 'qa/services'
 
@@ -45,7 +45,7 @@ def service_factory(session, base_url):
     session.delete(url=f'{base_url}/{API_SERVICE}')
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def movie_factory(session, base_url):
     API_MOVIES = 'qa/movies'
 
