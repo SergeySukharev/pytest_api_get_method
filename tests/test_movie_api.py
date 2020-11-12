@@ -13,6 +13,7 @@ def test_get_positive(service_factory, movie_factory, tokens, session, base_url)
     API_GET = 'api/movies'
     token = str(TOKENS[tokens])
     header = {'X-TOKEN': token}
+
     service = service_factory(tokens, session, base_url)
     movie = movie_factory(service, session, base_url)
     res = session.get(url=f'{base_url}/{API_GET}', headers=header)
