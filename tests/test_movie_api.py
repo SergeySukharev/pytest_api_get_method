@@ -47,7 +47,7 @@ def test_get_single_movie_negative(service_factory, movie_factory, tokens, sessi
 
 
 @pytest.mark.parametrize('tokens', ('3423424234234', "string", "7f34bf84-a678-4b7e-8e54"))
-def test_get_broken_token(service_factory, movie_factory, tokens, session, base_url, time_expires):
+def test_get_broken_token(tokens, session, base_url):
     """Негативный тест на запрос фильмов с 'битым' токеном"""
     API_GET = 'api/movies'
     header = {'X-TOKEN': tokens}
