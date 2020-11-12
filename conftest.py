@@ -1,5 +1,6 @@
 import pytest
 import requests
+import time
 
 
 def pytest_addoption(parser):
@@ -55,7 +56,7 @@ def movie_factory(session, base_url, request):
     def fin():
         session.delete(url=f'{base_url}/{API_MOVIES}')
 
-    def _movie_factory(service, session, base_url):
+    def _movie_factory(service, session, base_url, end_date):
         """Creates movie for given service"""
 
         payload = {
@@ -63,7 +64,7 @@ def movie_factory(session, base_url, request):
             "name": "Blade Runner",
             "description": "Sci_fi",
             "start_date": 1577883600,
-            "end_date": 1606780800,
+            "end_date": end_date,
             "services": [
                 service['id']
             ]
@@ -74,3 +75,17 @@ def movie_factory(session, base_url, request):
 
     request.addfinalizer(fin)
     return _movie_factory
+
+
+@pytest.fixture
+def time_expires():
+    '''return a UNIX style timestamp - 24 hours'''
+    seconds_in_a_day = 60 * 60 * 24
+    return int(time.time()-seconds_in_a_day)
+
+
+@pytest.fixture
+def time_valid():
+    '''return a UNIX style timestamp + 24 hours'''
+    seconds_in_a_day = 60 * 60 * 24
+    return int(time.time()+seconds_in_a_day)
