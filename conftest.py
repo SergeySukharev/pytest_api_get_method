@@ -22,8 +22,11 @@ def session():
 
 
 @pytest.fixture
-def service_factory(session, base_url):
+def service_factory(session, base_url, request):
     API_SERVICE = 'qa/services'
+
+    def fin():
+        session.delete(url=f'{base_url}/{API_SERVICE}')
 
     def _service_factory(token, session, base_url):
         """Creates service for given token"""
@@ -41,13 +44,17 @@ def service_factory(session, base_url):
 
         return res.json()
 
-    yield _service_factory
-    session.delete(url=f'{base_url}/{API_SERVICE}')
+    request.addfinalizer(fin)
+    return _service_factory
+    # session.delete(url=f'{base_url}/{API_SERVICE}')
 
 
 @pytest.fixture
-def movie_factory(session, base_url):
+def movie_factory(session, base_url, request):
     API_MOVIES = 'qa/movies'
+
+    def fin():
+        session.delete(url=f'{base_url}/{API_MOVIES}')
 
     def _movie_factory(service, session, base_url):
         """Creates movie for given service"""
@@ -66,5 +73,6 @@ def movie_factory(session, base_url):
 
         return res.json()
 
-    yield _movie_factory
-    session.delete(url=f'{base_url}/{API_MOVIES}')
+    request.addfinalizer(fin)
+    return _movie_factory
+    #session.delete(url=f'{base_url}/{API_MOVIES}')
