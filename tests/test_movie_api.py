@@ -1,4 +1,5 @@
 import pytest
+import time
 
 TOKENS = {
     "tv": "f2373c06-47db-4d35-99f1-21e269956171",
@@ -15,7 +16,9 @@ def test_get_positive(service_factory, movie_factory, tokens, session, base_url)
     header = {'X-TOKEN': token}
 
     service = service_factory(tokens, session, base_url)
+    time.sleep(5)
     movie = movie_factory(service, session, base_url)
+    time.sleep(5)
     res = session.get(url=f'{base_url}/{API_GET}', headers=header)
 
     assert res.status_code == 200

@@ -46,7 +46,6 @@ def service_factory(session, base_url, request):
 
     request.addfinalizer(fin)
     return _service_factory
-    # session.delete(url=f'{base_url}/{API_SERVICE}')
 
 
 @pytest.fixture
@@ -75,4 +74,3 @@ def movie_factory(session, base_url, request):
 
     request.addfinalizer(fin)
     return _movie_factory
-    #session.delete(url=f'{base_url}/{API_MOVIES}')
