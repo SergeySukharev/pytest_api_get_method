@@ -12,7 +12,7 @@ TOKENS = {
 
 
 @pytest.mark.parametrize('tokens', list(TOKENS.keys()))
-def test_get_positive(service_factory, movie_factory, tokens, session, base_url):
+def test_get_single_movie(service_factory, movie_factory, tokens, session, base_url):
     """Проверка метода get"""
     API_GET = 'api/movies'
     token = str(TOKENS[tokens])
@@ -29,6 +29,24 @@ def test_get_positive(service_factory, movie_factory, tokens, session, base_url)
         assert elem['id'] == movie['id']
 
 
+@pytest.mark.parametrize('tokens', list(TOKENS.keys()))
+def test_get_multiple_movies(service_factory, movie_factory, tokens, session, base_url):
+    """Проверка метода get при получении нескольких элементов"""
+    API_GET = 'api/movies'
+    token = str(TOKENS[tokens])
+    header = {'X-TOKEN': token}
+
+    service = service_factory(tokens, session, base_url)
+    time.sleep(5)
+    for x in range(5):
+        movie_factory(service, session, base_url)
+    time.sleep(5)
+    res = session.get(url=f'{base_url}/{API_GET}', headers=header)
+
+    assert res.status_code == 200
+    assert len(res.json()['items']) == 5
+
+
 def assert_valid_schema(data, schema_file):
     with open(schema_file) as f:
         schema = json.load(f)
@@ -37,6 +55,7 @@ def assert_valid_schema(data, schema_file):
 
 @pytest.mark.parametrize('tokens', list(TOKENS.keys()))
 def test_get_scheme_validation(session, base_url, tokens, service_factory, movie_factory):
+    """Валидация схемы json"""
     API_GET = 'api/movies'
     token = str(TOKENS[tokens])
     header = {'X-TOKEN': token}
@@ -44,6 +63,23 @@ def test_get_scheme_validation(session, base_url, tokens, service_factory, movie
     service = service_factory(tokens, session, base_url)
     time.sleep(5)
     movie_factory(service, session, base_url)
+    time.sleep(5)
+    res = session.get(url=f'{base_url}/{API_GET}', headers=header)
+
+    assert_valid_schema(res.json(), 'todo_schema.json')
+
+
+@pytest.mark.parametrize('tokens', list(TOKENS.keys()))
+def test_get_multi_scheme_validation(session, base_url, tokens, service_factory, movie_factory):
+    """Валидация схемы json на нескольких объектах"""
+    API_GET = 'api/movies'
+    token = str(TOKENS[tokens])
+    header = {'X-TOKEN': token}
+
+    service = service_factory(tokens, session, base_url)
+    time.sleep(5)
+    for x in range(5):
+        movie_factory(service, session, base_url)
     time.sleep(5)
     res = session.get(url=f'{base_url}/{API_GET}', headers=header)
 
