@@ -1,5 +1,8 @@
 import pytest
 import time
+import json
+from jsonschema import validate
+
 
 TOKENS = {
     "tv": "f2373c06-47db-4d35-99f1-21e269956171",
@@ -24,3 +27,24 @@ def test_get_positive(service_factory, movie_factory, tokens, session, base_url)
     assert res.status_code == 200
     for elem in res.json()['items']:
         assert elem['id'] == movie['id']
+
+
+def assert_valid_schema(data, schema_file):
+    with open(schema_file) as f:
+        schema = json.load(f)
+    return validate(instance=data, schema=schema)
+
+
+@pytest.mark.parametrize('tokens', list(TOKENS.keys()))
+def test_get_scheme_validation(session, base_url, tokens, service_factory, movie_factory):
+    API_GET = 'api/movies'
+    token = str(TOKENS[tokens])
+    header = {'X-TOKEN': token}
+
+    service = service_factory(tokens, session, base_url)
+    time.sleep(5)
+    movie_factory(service, session, base_url)
+    time.sleep(5)
+    res = session.get(url=f'{base_url}/{API_GET}', headers=header)
+
+    assert_valid_schema(res.json(), 'todo_schema.json')
